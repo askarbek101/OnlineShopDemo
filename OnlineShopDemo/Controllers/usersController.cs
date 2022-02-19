@@ -20,15 +20,12 @@ namespace OnlineShopDemo.Controllers
             _dbContext = dbContext;
         }
 
-        [HttpPatch("login")]
-        public IActionResult Patch(int key, string email, string password)
+        [HttpPost("login")]
+        public IActionResult Post(string email, string password)
         {
-            var record = _dbContext.Users.Find(key);
-            record.email = email;
-            record.password = password;
-            _dbContext.SaveChanges();
-
-            return Updated(record);
+            if (_dbContext.Users.Where(q => q.email == email && q.password == password).Count() == 0)
+                return NotFound();
+            return Ok(); //не совсем правильно но уже голова не варит) 
         }
         [HttpPost("register")]
         public IActionResult Post(string name, string email, string password)
@@ -40,7 +37,7 @@ namespace OnlineShopDemo.Controllers
             _dbContext.Add(record);
             _dbContext.SaveChanges();
 
-            return Updated(record);
+            return Created(record);
         }
         [HttpPatch("update-user")]
         public IActionResult Patch(int key, string name, string email, string password)
